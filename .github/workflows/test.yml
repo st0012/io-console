@@ -64,3 +64,21 @@ jobs:
         path: pkg/*.gem
         name: ${{steps.build.outputs.pkg}}
       if: steps.build.outputs.pkg
+
+  valgrind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: none
+          rubygems: latest
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+      - name: Run valgrind
+        run: |
+          bundle install
+          rake test:valgrind

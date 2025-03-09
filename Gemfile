@@ -9,4 +9,5 @@ group :development do
   gem "test-unit"
   gem "test-unit-ruby-core"
   gem 'rake-compiler'
+  gem "ruby_memcheck", platform: :mri
 end
