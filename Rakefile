@@ -26,7 +26,7 @@ end
 
 task :build => ffi_version_file
 
-Rake::TestTask.new(:test) do |t|
+test_config = lambda do |t|
   if extask
     t.libs = ["lib/#{RUBY_VERSION}/#{extask.platform}"]
   end
@@ -34,6 +34,16 @@ Rake::TestTask.new(:test) do |t|
   t.ruby_opts << "-rhelper"
   t.options = "--ignore-name=TestIO_Console#test_bad_keyword" if RUBY_ENGINE == "jruby"
   t.test_files = FileList["test/**/test_*.rb"]
+end
+
+Rake::TestTask.new(:test, &test_config)
+
+unless Gem.win_platform? || RUBY_ENGINE != "ruby"
+  require "ruby_memcheck"
+
+  namespace :test do
+    RubyMemcheck::TestTask.new(valgrind: :compile, &test_config)
+  end
 end
 
 RDoc::Task.new
